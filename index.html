@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <title>Sweetex AI PRO</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
@@ -13,21 +14,25 @@ body {
   font-family: Arial, sans-serif;
   color: white;
 }
+
 .app {
   max-width: 420px;
   margin: auto;
   padding: 20px;
 }
+
 .card {
   background: #020617;
   border-radius: 18px;
   padding: 20px;
   box-shadow: 0 0 30px rgba(0, 255, 200, 0.2);
 }
+
 h1 {
   text-align: center;
   margin-bottom: 20px;
 }
+
 input, select, button {
   width: 100%;
   padding: 12px;
@@ -36,39 +41,52 @@ input, select, button {
   border: none;
   font-size: 16px;
 }
+
 select, input {
   background: #020617;
   color: white;
   border: 1px solid #00ffc8;
 }
+
 button {
   background: linear-gradient(90deg, #00ffc8, #0077ff);
   color: black;
   font-weight: bold;
   cursor: pointer;
 }
+
+button:hover {
+  opacity: 0.85;
+}
+
 #output {
   margin-top: 15px;
-  padding: 12px;
+  padding: 15px;
   background: #020617;
   border-radius: 10px;
   border: 1px solid #00ffc8;
+  text-align: center;
+  min-height: 60px;
 }
+
 .history {
   margin-top: 20px;
   background: #020617;
   padding: 10px;
   border-radius: 10px;
 }
+
 .history h3 {
   margin-top: 0;
   text-align: center;
 }
+
 .history-item {
   border-bottom: 1px solid #00ffc8;
   padding: 5px;
   font-size: 13px;
 }
+
 .upload-box {
   border: 2px dashed #00ffc8;
   padding: 15px;
@@ -76,6 +94,7 @@ button {
   text-align: center;
   margin-top: 15px;
 }
+
 #chart {
   margin-top: 20px;
   height: 300px;
@@ -107,6 +126,7 @@ button {
     <button onclick="runAnalysis()">🚀 Run AI Scan</button>
 
     <div id="output">Waiting for signal...</div>
+
     <div id="chart"></div>
 
     <div class="history">
@@ -118,7 +138,7 @@ button {
 </div>
 
 <script>
-const API ="https://sweetex-backend-fa1z.onrender.com/analyze";
+const API = "https://sweetex-backend-fa1z.onrender.com/analyze";
 
 let historyList = [];
 
@@ -142,13 +162,10 @@ function runAnalysis() {
   .then(res => res.json())
   .then(data => {
     const result = `
-      📊 Signal: <b>${data.signal}</b><br>
-      📈 Trend: ${data.trend}<br>
-      🎯 RSI: ${data.rsi}<br>
-      📏 EMA: ${data.ema}<br>
-      🧠 SMC: ${data.smc}<br>
-      💰 Price: ${data.price}
+      📊 Signal: <b style="font-size:22px;color:#00ffc8;">${data.signal}</b><br><br>
+      📈 Trend: <b style="font-size:18px;color:#00bfff;">${data.trend}</b>
     `;
+
     document.getElementById("output").innerHTML = result;
     addHistory(pair, data.signal, data.trend);
   })
@@ -184,4 +201,4 @@ function loadChart(pair) {
 </script>
 
 </body>
-        </html>
+</html>
