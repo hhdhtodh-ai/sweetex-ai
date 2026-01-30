@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Sweetex AI PRO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<script src="https://s3.tradingview.com/tv.js"></script>
+
+<style>
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #020617, #020617);
+  font-family: Arial, sans-serif;
+  color: white;
+}
+.app {
+  max-width: 420px;
+  margin: auto;
+  padding: 20px;
+}
+.card {
+  background: #020617;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 0 30px rgba(0, 255, 200, 0.2);
+}
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+input, select, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+}
+select, input {
+  background: #020617;
+  color: white;
+  border: 1px solid #00ffc8;
+}
+button {
+  background: linear-gradient(90deg, #00ffc8, #0077ff);
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+#output {
+  margin-top: 15px;
+  padding: 12px;
+  background: #020617;
+  border-radius: 10px;
+  border: 1px solid #00ffc8;
+}
+.history {
+  margin-top: 20px;
+  background: #020617;
+  padding: 10px;
+  border-radius: 10px;
+}
+.history h3 {
+  margin-top: 0;
+  text-align: center;
+}
+.history-item {
+  border-bottom: 1px solid #00ffc8;
+  padding: 5px;
+  font-size: 13px;
+}
+.upload-box {
+  border: 2px dashed #00ffc8;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  margin-top: 15px;
+}
+#chart {
+  margin-top: 20px;
+  height: 300px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <div class="card">
+
+    <h1>🤖 Sweetex AI PRO</h1>
+
+    <select id="market">
+      <option value="Crypto">Crypto</option>
+      <option value="Forex">Forex</option>
+      <option value="OTC">OTC</option>
+    </select>
+
+    <input id="pair" placeholder="BTC/USDT বা EUR/USD" />
+
+    <div class="upload-box">
+      📸 Upload Chart Screenshot  
+      <input type="file" id="screenshot" />
+    </div>
+
+    <button onclick="runAnalysis()">🚀 Run AI Scan</button>
+
+    <div id="output">Waiting for signal...</div>
+    <div id="chart"></div>
+
+    <div class="history">
+      <h3>📜 Signal History</h3>
+      <div id="history"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API ="https://sweetex-backend-fa1z.onrender.com/analyze";
+
+let historyList = [];
+
+function runAnalysis() {
+  const pair = document.getElementById("pair").value;
+  const market = document.getElementById("market").value;
+
+  if (!pair) {
+    alert("Enter a trading pair");
+    return;
+  }
+
+  document.getElementById("output").innerHTML = "⏳ Scanning market...";
+  loadChart(pair);
+
+  fetch(API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pair, market })
+  })
+  .then(res => res.json())
+  .then(data => {
+    const result = `
+      📊 Signal: <b>${data.signal}</b><br>
+      📈 Trend: ${data.trend}<br>
+      🎯 RSI: ${data.rsi}<br>
+      📏 EMA: ${data.ema}<br>
+      🧠 SMC: ${data.smc}<br>
+      💰 Price: ${data.price}
+    `;
+    document.getElementById("output").innerHTML = result;
+    addHistory(pair, data.signal, data.trend);
+  })
+  .catch(() => {
+    document.getElementById("output").innerHTML = "❌ Backend Offline";
+  });
+}
+
+function addHistory(pair, signal, trend) {
+  const time = new Date().toLocaleTimeString();
+  historyList.unshift(`${time} | ${pair} | ${signal} | ${trend}`);
+  historyList = historyList.slice(0, 5);
+
+  document.getElementById("history").innerHTML =
+    historyList.map(h => `<div class="history-item">${h}</div>`).join("");
+}
+
+function loadChart(pair) {
+  document.getElementById("chart").innerHTML = "";
+
+  new TradingView.widget({
+    container_id: "chart",
+    autosize: true,
+    symbol: "BINANCE:" + pair.replace("/", ""),
+    interval: "1",
+    theme: "dark",
+    style: "1",
+    locale: "en",
+    hide_top_toolbar: true,
+    hide_legend: true
+  });
+}
+</script>
+
+</body>
+        </html>
